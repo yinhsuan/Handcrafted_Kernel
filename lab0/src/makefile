@@ -6,6 +6,7 @@ CFLAGS = -Wall -nostdlib
 
 TARGET = kernel8.img
 TARGET_ELF = kernel8.elf
+LD_SCRIPT = linker.ld
 
 all: $(TARGET)
 
@@ -15,7 +16,7 @@ all: $(TARGET)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET_ELF): a.o
-	$(LD) -T lab0.ld $< -o $@
+	$(LD) -T $(LD_SCRIPT) $< -o $@
 
 $(TARGET): $(TARGET_ELF)
 	@mkdir -p $(@D)
