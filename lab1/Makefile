@@ -24,8 +24,8 @@ $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
 $(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.S
 	$(ARMGNU)-gcc $(ASMFLAGS) -MMD -c $< -o $@
 
-kernel8.img: $(SRC_DIR)/link.ld $(OBJ_FILES)
-	$(ARMGNU)-ld -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf  $(OBJ_FILES)
+kernel8.img: $(SRC_DIR)/linker.ld $(OBJ_FILES)
+	$(ARMGNU)-ld -T $(SRC_DIR)/linker.ld -o $(BUILD_DIR)/kernel8.elf  $(OBJ_FILES)
 	$(ARMGNU)-objcopy $(BUILD_DIR)/kernel8.elf -O binary kernel8.img
 
 
