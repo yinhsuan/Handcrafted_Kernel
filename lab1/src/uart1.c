@@ -3,7 +3,7 @@
 #include "uart1.h"
 
 void uart_init() {
-    register unsigned int r;
+    // register unsigned int r;
 
     /* initialize UART */
     *AUX_ENABLES     |= 1;       // enable UART1 -> // Set AUXENB register to enable mini UART. Then mini UART register can be accessed.
@@ -32,4 +32,13 @@ char uart_recv() {
 void uart_send (unsigned int c) {
     while (!(*AUX_MU_LSR_REG & 0x20)) {};
     *AUX_MU_IO_REG = c;
+}
+
+void uart_puts(char *str) {
+    while (*str) {
+        if (*str == '\n') {
+            uart_send('\r');
+        }
+        uart_send(*str++);
+    }
 }

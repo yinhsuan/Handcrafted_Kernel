@@ -3,6 +3,6 @@
 
 void main () {
     uart_init();
+    cli_print_banner();
 
-    return 0;
 }
