@@ -1,9 +1,10 @@
 #include "shell.h"
 #include "uart1.h"
+#include "power.h"
 
 struct CLI_CMDS cmd_list[CLI_MAX_CMD] = {
     {.command="hello", .help="print Hello World!"},
-    {.command="help", .help="print all available commands"},
+    {.command="help", .help="print the help menu"},
     {.command="info", .help="get device information via mailbox"},
     {.command="reboot", .help="reboot the device"}
 };
@@ -92,5 +93,11 @@ void do_cmd_info() {
 }
 
 void do_cmd_reboot() {
-    uart_puts("do_cmd_reboot\r\n");
+    uart_puts("Reboot in 5 seconds ...\r\n\r\n");
+
+    volatile unsigned int* rstc_addr = (unsigned int*) PM_RSTC;
+    *rstc_addr = PM_PASSWORD | 0x20;
+
+    volatile unsigned int* wdog_addr = (unsigned int*) PM_WDOG;
+    *wdog_addr = PM_PASSWORD | 5;
 }
