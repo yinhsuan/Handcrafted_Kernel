@@ -1,6 +1,13 @@
 #include "shell.h"
 #include "uart1.h"
 
+struct CLI_CMDS cmd_list[CLI_MAX_CMD] = {
+    {.command="hello", .help="print Hello World!"},
+    {.command="help", .help="print all available commands"},
+    {.command="info", .help="get device information via mailbox"},
+    {.command="reboot", .help="reboot the device"}
+};
+
 void cli_print_banner() {
     uart_puts("=======================================\r\n");
     uart_puts("  Welcome to NYCU-OSC 2023 Lab1 Shell  \r\n");
@@ -68,14 +75,22 @@ void cli_cmd_exec(char* buffer) {
 }
 
 void do_cmd_help() {
-    uart_puts("do_cmd_help\r\n");
+    for (int i=0; i<CLI_MAX_CMD; i++) {
+        uart_puts(cmd_list[i].command);
+        uart_puts("\t\t: ");
+        uart_puts(cmd_list[i].help);
+        uart_puts("\r\n");
+    }
 }
+
 void do_cmd_hello() {
-    uart_puts("do_cmd_hello\r\n");
+    uart_puts("Hello World!\r\n");
 }
+
 void do_cmd_info() {
     uart_puts("do_cmd_info\r\n");
 }
+
 void do_cmd_reboot() {
     uart_puts("do_cmd_reboot\r\n");
 }
