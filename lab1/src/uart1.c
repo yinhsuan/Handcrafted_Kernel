@@ -25,7 +25,7 @@ void uart_init() {
 char uart_recv() {
     char r;
     while (!(*AUX_MU_LSR_REG & 0x01)) {}; // Check AUX_MU_LSR_REG’s data ready field
-    r = (char) (*AUX_MU_LSR_REG); // If set, read from AUX_MU_IO_REG
+    r = (char) (*AUX_MU_IO_REG); // If set, read from AUX_MU_IO_REG
     return r == '\r' ? '\n' : r;
 }
 
