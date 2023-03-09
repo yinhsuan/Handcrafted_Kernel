@@ -29,7 +29,7 @@ char uart_recv() {
     return r == '\r' ? '\n' : r;
 }
 
-char uart_send (unsigned int c) {
+void uart_send (unsigned int c) {
     while (!(*AUX_MU_LSR_REG & 0x20)) {};
     *AUX_MU_IO_REG = c;
 }
