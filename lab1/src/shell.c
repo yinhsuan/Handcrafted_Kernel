@@ -1,5 +1,6 @@
 #include "shell.h"
 #include "uart1.h"
+#include "mbox.h"
 #include "power.h"
 
 struct CLI_CMDS cmd_list[CLI_MAX_CMD] = {
@@ -89,7 +90,44 @@ void do_cmd_hello() {
 }
 
 void do_cmd_info() {
-    uart_puts("do_cmd_info\r\n");
+    // print hw revision
+    pt[0] = 8 * 4; // the size of the mailbox message in bytes
+    pt[1] = MBOX_REQUEST_PROCESS; // specify the type of message being sent -> indicate that the mailbox message is a request that should be processed by the receiver
+    pt[2] = MBOX_TAG_GET_BOARD_REVISION; // the specific information that is being requested
+    pt[3] = 4; // the length of the data that is being requested
+    // specify a request code associated with the message being sent
+    // -> This request code is used by the GPU to "determine the type of request" being made and the action to be taken in response
+    // -> "no additional request code is associated with the mailbox message being sent"
+    pt[4] = MBOX_TAG_REQUEST_CODE;
+    pt[5] = 0;
+    pt[6] = 0;
+    pt[7] = MBOX_TAG_LAST_BYTE;
+
+    // send the message to the GPU and retrieve the requested information
+    if (mbox_call(MBOX_TAGS_ARM_TO_VC, (unsigned int)((unsigned long)&pt))) {
+        uart_puts("Hardware Revision\t: ");
+        uart_2hex(pt[6]);
+        uart_2hex(pt[5]);
+        uart_puts("\r\n");
+    }
+    // print arm memory
+    pt[0] = 8 * 4;
+    pt[1] = MBOX_REQUEST_PROCESS;
+    pt[2] = MBOX_TAG_GET_ARM_MEMORY;
+    pt[3] = 8; // the response buffer should be 8 bytes in length
+    pt[4] = MBOX_TAG_REQUEST_CODE;
+    pt[5] = 0;
+    pt[6] = 0;
+    pt[7] = MBOX_TAG_LAST_BYTE;
+
+    if (mbox_call(MBOX_TAGS_ARM_TO_VC, (unsigned int)((unsigned long)&pt))) {
+        uart_puts("ARM Memory Base Address\t: ");
+        uart_2hex(pt[5]);
+        uart_puts("\r\n");
+        uart_puts("ARM Memory Size\t\t: ");
+        uart_2hex(pt[6]);
+        uart_puts("\r\n");
+    }
 }
 
 void do_cmd_reboot() {

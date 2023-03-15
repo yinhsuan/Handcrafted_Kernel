@@ -42,3 +42,14 @@ void uart_puts(char *str) {
         uart_send(*str++);
     }
 }
+
+void uart_2hex(unsigned int d) {
+    unsigned int n;
+    int c;
+    // convert the input value d into its hexadecimal representation
+    for (c=28; c>=0; c-=4) {
+        n = (d>>c) & (0xF);
+        n += (n>9) ? 0x37 : 0x30;
+        uart_send(n);
+    }
+}
