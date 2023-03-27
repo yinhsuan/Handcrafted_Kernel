@@ -35,10 +35,10 @@ $(TARGET_IMG): $(SRC_DIR)/$(LD_SCRIPT) $(OBJ_FILES)
 all: $(TARGET_IMG)
 
 run:
-	qemu-system-aarch64 -M raspi3b -kernel $(TARGET_IMG) -display none -serial null -serial stdio
+	qemu-system-aarch64 -M raspi3b -kernel $(TARGET_IMG) -display none -serial null -serial stdio -initrd initramfs.cpio -dtb bcm2710-rpi-3-b-plus.dtb
 
 debug:
-	qemu-system-aarch64 -M raspi3b -kernel $(TARGET_IMG) -display none -S -s
+	qemu-system-aarch64 -M raspi3b -kernel $(TARGET_IMG) -display none -serial null -S -s -initrd initramfs.cpio -dtb bcm2710-rpi-3-b-plus.dtb
 
 clean:
 	rm -rf $(BUILD_DIR) *.img
