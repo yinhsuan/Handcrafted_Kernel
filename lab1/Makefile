@@ -1,5 +1,3 @@
-
-# ARMGNU ?= aarch64-linux-gnu
 CC := aarch64-linux-gnu-gcc
 LD := aarch64-linux-gnu-ld
 OBJCOPY := aarch64-linux-gnu-objcopy
@@ -23,7 +21,7 @@ DEP_FILES = $(OBJ_FILES:%.o=%.d)
 -include $(DEP_FILES)
 
 $(BUILD_DIR)/%_c.o: $(SRC_DIR)/%.c
-	mkdir -p $(@D)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 $(BUILD_DIR)/%_s.o: $(SRC_DIR)/%.S
