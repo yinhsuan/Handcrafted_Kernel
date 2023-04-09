@@ -29,7 +29,6 @@ static unsigned int parse_hex_str(char *s, unsigned int max_len) {
 int cpio_newc_parse_header(struct cpio_newc_header *this_header_pointer, char **pathname, unsigned int *filesize, char **data, struct cpio_newc_header **next_header_pointer) {
     // Ensure magic header exists
     if (strncmp(this_header_pointer->c_magic, CPIO_NEWC_HEADER_MAGIC, sizeof(this_header_pointer->c_magic)) != 0) {
-        // uart_puts("cp 0000");
         return -1;
     }
     
