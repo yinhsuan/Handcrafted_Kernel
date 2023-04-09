@@ -155,10 +155,6 @@ int strncmp(const char *s1, const char *s2, unsigned long long n) {
             c1 = (unsigned char)*s1++;
             c2 = (unsigned char)*s2++;
             if (c1 == '\0' || c1 != c2) return (c1 - c2);
-
-            c1 = (unsigned char)*s1++;
-            c2 = (unsigned char)*s2++;
-            if (c1 == '\0' || c1 != c2) return (c1 - c2);
         } while (--n4 > 0);
         n &= 3;
     }

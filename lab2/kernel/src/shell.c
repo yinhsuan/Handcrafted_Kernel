@@ -165,7 +165,7 @@ void do_cmd_ls() {
         int error = cpio_newc_parse_header(header_ptr, &c_filepath, &c_filesize, &c_filedata, &header_ptr);
 
         if (error) {
-            uart_puts("cpio parse error!!!");
+            uart_puts("cpio parse error!!!\n");
             break;
         }
         //if this is not TRAILER!!! (last of file)
