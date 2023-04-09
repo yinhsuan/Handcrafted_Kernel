@@ -1,7 +1,7 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
 
-#define CLI_MAX_CMD 4
+#define CLI_MAX_CMD 5
 #define CMD_MAX_LEN 32
 #define MSG_MAX_LEN 128
 
@@ -21,5 +21,7 @@ void do_cmd_help();
 void do_cmd_hello();
 void do_cmd_info();
 void do_cmd_reboot();
+
+void do_cmd_ls();
 
 #endif

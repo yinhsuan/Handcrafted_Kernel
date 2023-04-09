@@ -4,7 +4,7 @@
 void uart_init();
 char uart_recv();
 void uart_send(unsigned int c);
-void uart_puts(char* str);
+int uart_puts(char *fmt, ...);
 void uart_2hex(unsigned int d);
 
 #endif

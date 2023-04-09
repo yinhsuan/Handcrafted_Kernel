@@ -1,18 +1,26 @@
+#include <stddef.h>
 #include "shell.h"
 #include "uart1.h"
 #include "mbox.h"
 #include "power.h"
+#include "cpio.h"
+#include "utils.h"
+#include "dtb.h"
+
+extern char* dtb_ptr;
+void* CPIO_DEFAULT_PLACE;
 
 struct CLI_CMDS cmd_list[CLI_MAX_CMD] = {
     {.command="hello", .help="print Hello World!"},
     {.command="help", .help="print the help menu"},
     {.command="info", .help="get device information via mailbox"},
+    {.command="ls", .help="list directory contents"},
     {.command="reboot", .help="reboot the device"}
 };
 
 void cli_print_banner() {
     uart_puts("=======================================\r\n");
-    uart_puts("  Welcome to NYCU-OSC 2023 Lab1 Shell  \r\n");
+    uart_puts("  Welcome to NYCU-OSC 2023 Lab2 Shell  \r\n");
     uart_puts("=======================================\r\n");
 }
 
@@ -58,6 +66,8 @@ int cli_cmd_strcmp(const char* p1, const char* p2) {
 
 
 void cli_cmd_exec(char* buffer) {
+    if (!buffer) return;
+
     if (cli_cmd_strcmp(buffer, "hello") == 0) {
         do_cmd_hello();
     }
@@ -69,6 +79,9 @@ void cli_cmd_exec(char* buffer) {
     }
     else if (cli_cmd_strcmp(buffer, "reboot") == 0) {
         do_cmd_reboot();
+    }
+    else if (cli_cmd_strcmp(buffer, "ls") == 0) {
+        do_cmd_ls();
     }
     else if (*buffer) {
         uart_puts(buffer);
@@ -138,4 +151,26 @@ void do_cmd_reboot() {
 
     volatile unsigned int* wdog_addr = (unsigned int*) PM_WDOG;
     *wdog_addr = PM_PASSWORD | 5;
+}
+
+void do_cmd_ls() {
+    // uart_puts("Enter do_cmd_ls\r\n\r\n");
+
+    char* c_filepath;
+    char* c_filedata;
+    unsigned int c_filesize;
+    struct cpio_newc_header *header_ptr = CPIO_DEFAULT_PLACE;
+
+    while (header_ptr != 0) {
+        int error = cpio_newc_parse_header(header_ptr, &c_filepath, &c_filesize, &c_filedata, &header_ptr);
+
+        if (error) {
+            uart_puts("cpio parse error!!!");
+            break;
+        }
+        //if this is not TRAILER!!! (last of file)
+        if (header_ptr != 0) {
+            uart_puts("%s\n", c_filepath);
+        }
+    }
 }
