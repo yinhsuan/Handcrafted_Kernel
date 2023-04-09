@@ -28,13 +28,10 @@ static unsigned int parse_hex_str(char *s, unsigned int max_len) {
 /* return -1 if parse error*/
 int cpio_newc_parse_header(struct cpio_newc_header *this_header_pointer, char **pathname, unsigned int *filesize, char **data, struct cpio_newc_header **next_header_pointer) {
     // Ensure magic header exists
-    // uart_puts("cp 1");
     if (strncmp(this_header_pointer->c_magic, CPIO_NEWC_HEADER_MAGIC, sizeof(this_header_pointer->c_magic)) != 0) {
         // uart_puts("cp 0000");
         return -1;
     }
-
-    // uart_puts("cp 2");
     
     // Transfer big endian 8 byte hex string to unsigned int and store into *filesize
     *filesize = parse_hex_str(this_header_pointer->c_filesize, 8);
@@ -49,7 +46,6 @@ int cpio_newc_parse_header(struct cpio_newc_header *this_header_pointer, char **
     offset = (offset % 4 == 0) ? offset : (offset + 4 - offset%4);
     *data = (char *)this_header_pointer + offset;
 
-    // uart_puts("cp 3");
     // Get next header pointer
     if (*filesize == 0) {
         *next_header_pointer = (struct cpio_newc_header*)*data;
@@ -59,7 +55,6 @@ int cpio_newc_parse_header(struct cpio_newc_header *this_header_pointer, char **
         *next_header_pointer = (struct cpio_newc_header*)(*data + (offset%4 == 0 ? offset : (offset + 4 - offset%4)));
     }
 
-    // uart_puts("cp 4");
     // if filepath is TRAILER!!! means there is no more files.
     if (strncmp(*pathname, "TRAILER!!!", sizeof("TRAILER!!!")) == 0) {
         *next_header_pointer = 0;

@@ -107,7 +107,7 @@ void dtb_callback_show_tree(uint32_t node_type, char *name, void *value, uint32_
 void dtb_callback_initramfs(uint32_t node_type, char *name, void *value, uint32_t name_size) {
     // https://github.com/stweil/raspberrypi-documentation/blob/master/configuration/device-tree.md
     // linux,initrd-start will be assigned by start.elf based on config.txt
-    if (node_type==FDT_PROP && strcmp(name, "linux,initrd-start") == 0) {
+    if (node_type == FDT_PROP && strcmp(name, "linux,initrd-start") == 0) {
         CPIO_DEFAULT_PLACE = (void *)(unsigned long long)uint32_endian_big2little(*(uint32_t*)value);
     }
 }
