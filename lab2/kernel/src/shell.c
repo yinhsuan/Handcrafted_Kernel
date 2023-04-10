@@ -18,6 +18,7 @@ struct CLI_CMDS cmd_list[CLI_MAX_CMD] = {
     {.command="ls", .help="list directory contents"},
     {.command="dtb", .help="show device tree"},
     {.command="malloc", .help="simple allocator in heap session"},
+    {.command="cat", .help="concatenate files and print on the standard output"},
     {.command="reboot", .help="reboot the device"}
 };
 
@@ -71,29 +72,47 @@ int cli_cmd_strcmp(const char* p1, const char* p2) {
 void cli_cmd_exec(char* buffer) {
     if (!buffer) return;
 
-    if (cli_cmd_strcmp(buffer, "hello") == 0) {
+    char* cmd = buffer;
+    char* argv;
+    while (1) {
+        if (*buffer == '\0') {
+            argv = buffer;
+            break;
+        }
+        if (*buffer == ' ') {
+            *buffer = '\0';
+            argv = buffer + 1;
+            break;
+        }
+        buffer++;
+    }
+
+    if (cli_cmd_strcmp(cmd, "hello") == 0) {
         do_cmd_hello();
     }
-    else if (cli_cmd_strcmp(buffer, "help") == 0) {
+    else if (cli_cmd_strcmp(cmd, "help") == 0) {
         do_cmd_help();
     }
-    else if (cli_cmd_strcmp(buffer, "info") == 0) {
+    else if (cli_cmd_strcmp(cmd, "info") == 0) {
         do_cmd_info();
     }
-    else if (cli_cmd_strcmp(buffer, "reboot") == 0) {
+    else if (cli_cmd_strcmp(cmd, "reboot") == 0) {
         do_cmd_reboot();
     }
-    else if (cli_cmd_strcmp(buffer, "ls") == 0) {
+    else if (cli_cmd_strcmp(cmd, "ls") == 0) {
         do_cmd_ls();
     }
-    else if (cli_cmd_strcmp(buffer, "dtb") == 0) {
+    else if (cli_cmd_strcmp(cmd, "dtb") == 0) {
         do_cmd_dtb();
     }
-    else if (cli_cmd_strcmp(buffer, "malloc") == 0) {
+    else if (cli_cmd_strcmp(cmd, "malloc") == 0) {
         do_cmd_malloc();
     }
-    else if (*buffer) {
-        uart_puts(buffer);
+    else if (cli_cmd_strcmp(cmd, "cat") == 0) {
+        do_cmd_cat(argv);
+    }
+    else if (*cmd) {
+        uart_puts(cmd);
         uart_puts(": command not found\r\n");
     }
 }
@@ -200,4 +219,27 @@ void do_cmd_malloc() {
     char* test3 = malloc(0x28);
     memcpy(test3, "test malloc3", sizeof("test malloc3"));
     uart_puts("%s\n", test3);
+}
+
+void do_cmd_cat(char* filepath) {
+    char* c_filepath;
+    char* c_filedata;
+    unsigned int c_filesize;
+    struct cpio_newc_header *header_ptr = CPIO_DEFAULT_PLACE;
+
+    while (header_ptr != 0) {
+        int error = cpio_newc_parse_header(header_ptr, &c_filepath, &c_filesize, &c_filedata, &header_ptr);
+        if (error) {
+            uart_puts("cpio parse error!!!");
+            break;
+        }
+        if (strcmp(c_filepath, filepath) == 0) {
+            uart_puts("%s\n", c_filedata);
+            break;
+        }
+        if (header_ptr == 0) {
+            uart_puts("cat: %s: No such file or directory\n", filepath);
+        }
+    }
+
 }
